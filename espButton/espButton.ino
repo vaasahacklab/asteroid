@@ -8,30 +8,25 @@ const char* WIFI_PASS = "my-pass";
 const int HTTP_PORT = 8080;
 IPAddress server(10,10,0,233);
 
-bool sending = false;
+volatile bool send = false;
 
 void setup() {
   Serial.begin(115200);
   pinMode(BUTTON_PIN, INPUT);
   attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), onButtonPress, RISING);
-  
   createConnection(WIFI_SSID, WIFI_PASS);
 }
 
 void loop() {
-  sendRequest();
-  delay(10000);
+  if (send) { 
+    sendRequest(); 
+    send = false;
+    delay(5000);
+  }
 }
 
 void onButtonPress() {
-  static unsigned long last_interrupt_time = 0;
-  unsigned long interrupt_time = millis();
-  if (interrupt_time - last_interrupt_time > 5000)
-  {
-    sendRequest();
-    delay(1000);
-  }
-  last_interrupt_time = interrupt_time;
+  send = true;
 }
 
 bool createConnection(const char* ssid, const char* key){
@@ -40,6 +35,7 @@ bool createConnection(const char* ssid, const char* key){
   WiFi.begin(ssid, key);
   const int MAX_TRIES = 5;
   int tries = 0;
+  
   do {
     delay(500);
     Serial.print(".");
