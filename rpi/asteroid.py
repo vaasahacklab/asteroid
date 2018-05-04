@@ -70,7 +70,9 @@ class Pin:
 
 
 class Button(BaseHTTPRequestHandler):
-    # GET
+    def __init__(self):
+        self.pin = Pin()               # Read GPIO pin setup
+    
     def do_GET(self):
         # Send response status code
         self.send_response(200) # 200 OK -response
@@ -94,14 +96,13 @@ class Button(BaseHTTPRequestHandler):
 
 class Asteroid:
     def __init__(self):
-        self.pin = Pin()               # Read GPIO pin setup
         server_address = ("0.0.0.0", 8080)
-        httpd = HTTPServer(server_address, Button)
+        self.httpd = HTTPServer(server_address, Button)
 
     def wait_for_button(self):
         log.info("Starting HTTP-server for remote action button")
         try:
-            httpd.serve_forever()
+            self.httpd.serve_forever()
         except KeyboardInterrupt:
             pass
 
@@ -125,7 +126,7 @@ class Asteroid:
 
     def stop(self, signum):
         log.info("Stopping HTTP-server for remote action button")
-        httpd.server_close()
+        self.httpd.server_close()
         GPIO.cleanup()                 # Undo all GPIO setups we have done
         sys.exit(signum)               # Exit asteroid with signum as informal parameter (0 success, 1 error)
 
