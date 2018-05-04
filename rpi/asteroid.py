@@ -6,8 +6,8 @@ logging.config.fileConfig("logging.ini")
 
 from subprocess import call  # Call external programs
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from time import sleep       # Sleep
-import RPi.GPIO as GPIO      # GPIO
+from time import sleep       # Sleep / wait
+import RPi.GPIO as GPIO      # Raspberry GPIO library
 import sys                   # System calls
 import signal                # Catch kill signal
 import select                # For select.error
