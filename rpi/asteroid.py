@@ -48,17 +48,17 @@ class Button(BaseHTTPRequestHandler):
     # GET
     def do_GET(self):
         # Send response status code
-        self.send_response(204) # 204 No Content -response
+        self.send_response(200) # 200 OK -response
 
         # Send headers
-        #self.send_header('Content-type','text/html; charset=utf-8')
-        #self.end_headers()
+        self.send_header('Content-type','text/html; charset=utf-8')
+        self.end_headers()
 
         # Send message back to client
-        #message = "<html><title>Asteroid</title><body>Asteroid</body></html>"
+        message = "<html><title>Asteroid</title><body>Asteroid</body></html>"
         # Write content as utf-8 data
-        #self.wfile.write(bytes(message, "utf8"))
-        print("nappi painettu, tässä kutsutaan toiminta")
+        self.wfile.write(bytes(message, "utf8"))
+        log.debug("Remote button triggered")
         return
 
 class Asteroid:
@@ -67,7 +67,7 @@ class Asteroid:
 
     def wait_for_button(self):
         server_address = ("0.0.0.0", 8080)
-        httpd = HTTPServer(server_address, button)
+        httpd = HTTPServer(server_address, Button)
         log.info("Starting HTTP-server for remote action button")
         try:
             httpd.serve_forever()
