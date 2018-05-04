@@ -95,10 +95,10 @@ class Button(BaseHTTPRequestHandler):
 class Asteroid:
     def __init__(self):
         self.pin = Pin()               # Read GPIO pin setup
-
-    def wait_for_button(self):
         server_address = ("0.0.0.0", 8080)
         httpd = HTTPServer(server_address, Button)
+
+    def wait_for_button(self):
         log.info("Starting HTTP-server for remote action button")
         try:
             httpd.serve_forever()
