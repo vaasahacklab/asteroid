@@ -70,9 +70,6 @@ class Pin:
 
 
 class Button(BaseHTTPRequestHandler):
-    def __init__(self):
-        self.pin = Pin()               # Read GPIO pin setup
-    
     def do_GET(self):
         # Send response status code
         self.send_response(200) # 200 OK -response
@@ -86,17 +83,18 @@ class Button(BaseHTTPRequestHandler):
         # Write content as utf-8 data
         self.wfile.write(bytes(message, "utf8"))
         log.debug("Remote button triggered")
-        pin.main_light_on()
-        pin.main_light_off()
-        pin.aux_light1_on()
-        pin.aux_light1_off()
-        pin.aux_light2_on()
-        pin.aux_light2_off()
+        asteroid.pin.main_light_on()
+        asteroid.pin.main_light_off()
+        asteroid.pin.aux_light1_on()
+        asteroid.pin.aux_light1_off()
+        asteroid.pin.aux_light2_on()
+        asteroid.pin.aux_light2_off()
         return
 
 class Asteroid:
     def __init__(self):
         server_address = ("0.0.0.0", 8080)
+        self.pin = Pin()
         self.httpd = HTTPServer(server_address, Button)
 
     def wait_for_button(self):
@@ -107,6 +105,7 @@ class Asteroid:
             pass
 
     def start(self):
+        log.info("Starting asteroid")
         signum = 0                     # Set error status as clean
         try:
             self.wait_for_button()
@@ -122,13 +121,12 @@ class Asteroid:
             asteroid.stop(signum)
             log.debug("Shutdown tasks completed")
             log.info("Asteroid stopped")
-            self.stop(signum)          # Tell asteroid to exit with error status
+            sys.exit(signum)          # Tell asteroid to exit with error status
 
     def stop(self, signum):
-        log.info("Stopping HTTP-server for remote action button")
+        log.debug("Stopping HTTP-server for remote action button")
         self.httpd.server_close()
         GPIO.cleanup()                 # Undo all GPIO setups we have done
-        sys.exit(signum)               # Exit asteroid with signum as informal parameter (0 success, 1 error)
 
 asteroid = Asteroid()
 
