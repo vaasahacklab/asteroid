@@ -31,18 +31,43 @@ aux_light2 = 36
 # in5 = 37
 
 class Pin:
-  # Init (activate pin)
-  def __init__(self):
-    # Use RPi BOARD pin numbering convention
-    GPIO.setmode(GPIO.BOARD)
+    # Init (activate pin)
+    def __init__(self):
+        # Use RPi BOARD pin numbering convention
+        GPIO.setmode(GPIO.BOARD)
 
-    # Set up GPIO output channels
-    GPIO.setup(main_light, GPIO.OUT, initial=GPIO.HIGH)
-    log.debug("initialized main_light, pin to high")
-    GPIO.setup(aux_light1, GPIO.OUT, initial=GPIO.HIGH)
-    log.debug("initialized aux_light1, pin to high")
-    GPIO.setup(aux_light2, GPIO.OUT, initial=GPIO.HIGH)
-    log.debug("initialized aux_light2, pin to high")
+        # Set up GPIO output channels
+        GPIO.setup(main_light, GPIO.OUT, initial=GPIO.HIGH)
+        log.debug("initialized main_light, pin to high")
+        GPIO.setup(aux_light1, GPIO.OUT, initial=GPIO.HIGH)
+        log.debug("initialized aux_light1, pin to high")
+        GPIO.setup(aux_light2, GPIO.OUT, initial=GPIO.HIGH)
+        log.debug("initialized aux_light2, pin to high")
+
+    def main_light_on(self):
+        GPIO.output(main_light, GPIO.LOW)
+        log.debug("main_light to on")
+
+    def main_light_off(self):
+        GPIO.output(main_light, GPIO.HIGH)
+        log.debug("main_light to off")
+
+    def aux_light1_on(self):
+        GPIO.output(aux_light1, GPIO.LOW)
+        log.debug("main_light1 to on")
+
+    def aux_light1_off(self):
+        GPIO.output(aux_light1, GPIO.HIGH)
+        log.debug("aux_light1 to off")
+
+    def aux_light2_on(self):
+        GPIO.output(aux_light2, GPIO.LOW)
+        log.debug("aux_light2 to on")
+
+    def aux_light2_off(self):
+        GPIO.output(aux_light2, GPIO.HIGH)
+        log.debug("aux_light2 to off")
+
 
 class Button(BaseHTTPRequestHandler):
     # GET
@@ -59,6 +84,12 @@ class Button(BaseHTTPRequestHandler):
         # Write content as utf-8 data
         self.wfile.write(bytes(message, "utf8"))
         log.debug("Remote button triggered")
+        pin.main_light_on()
+        pin.main_light_off()
+        pin.aux_light1_on()
+        pin.aux_light1_off()
+        pin.aux_light2_on()
+        pin.aux_light2_off()
         return
 
 class Asteroid:
@@ -73,8 +104,6 @@ class Asteroid:
             httpd.serve_forever()
         except KeyboardInterrupt:
             pass
-        httpd.server_close()
-        log.info("Stopping HTTP-server for remote action button")
 
     def start(self):
         signum = 0                     # Set error status as clean
@@ -95,6 +124,8 @@ class Asteroid:
             self.stop(signum)          # Tell asteroid to exit with error status
 
     def stop(self, signum):
+        log.info("Stopping HTTP-server for remote action button")
+        httpd.server_close()
         GPIO.cleanup()                 # Undo all GPIO setups we have done
         sys.exit(signum)               # Exit asteroid with signum as informal parameter (0 success, 1 error)
 

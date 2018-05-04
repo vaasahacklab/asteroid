@@ -1,0 +1,15 @@
+[Unit]
+Description=Asteroid control system
+After=network.target
+
+[Service]
+Type=simple
+User=hacklab
+Group=hacklab
+WorkingDirectory=/home/hacklab/asteroid/rpi
+ExecStart=/home/hacklab/asteroid/rpi/venv/bin/python asteroid.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
