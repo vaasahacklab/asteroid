@@ -5,12 +5,13 @@ import logging, logging.config
 logging.config.fileConfig("logging.ini")
 
 from subprocess import call  # Call external programs
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer # HTTP server to listen remote ESP button
 from time import sleep       # Sleep / wait
 import RPi.GPIO as GPIO      # Raspberry GPIO library
 import sys                   # System calls
 import signal                # Catch kill signal
 import select                # For select.error
+import threading             # Run multiple functions simultaneously<
 
 # Setup logging
 log = logging.getLogger("asteroid")
@@ -82,13 +83,16 @@ class Button(BaseHTTPRequestHandler):
         message = "<html><title>Asteroid</title><body>Asteroid</body></html>"
         # Write content as utf-8 data
         self.wfile.write(bytes(message, "utf8"))
-        log.debug("Remote button triggered")
-        asteroid.pin.main_light_on()
-        asteroid.pin.main_light_off()
-        asteroid.pin.aux_light1_on()
-        asteroid.pin.aux_light1_off()
-        asteroid.pin.aux_light2_on()
-        asteroid.pin.aux_light2_off()
+        log.info("Remote button triggered")
+        log.debug("Running threads")
+        asteroid.main_light.start()
+        asteroid.aux_light1.start()
+        asteroid.aux_light2.start()
+        log.debug("Threads started, waiting them to finish")
+        asteroid.main_light.join()
+        asteroid.aux_light1.join()
+        asteroid.aux_light2.join()
+        log.debug("All threads finished")
         return
 
 class Asteroid:
@@ -96,6 +100,9 @@ class Asteroid:
         server_address = ("0.0.0.0", 8080)
         self.pin = Pin()
         self.httpd = HTTPServer(server_address, Button)
+        main_light = threading.Thread(target=self.run_main_light, args=())
+        aux_light1 = threading.Thread(target=self.run_aux_light1, args=())
+        aux_light2 = threading.Thread(target=self.run_aux_light2, args=())
 
     def wait_for_button(self):
         log.info("Starting HTTP-server for remote action button")
@@ -103,6 +110,27 @@ class Asteroid:
             self.httpd.serve_forever()
         except KeyboardInterrupt:
             pass
+
+    def run_main_light(self):
+        log.debug("Main light on")
+        pin.main_light_on()
+        sleep(5)
+        log.debug("Main light off")
+        pin.main_light_off()
+
+    def run_aux_light1(self):
+        log.debug("Aux light 1 on")
+        pin.aux_light1_on()
+        sleep(2)
+        log.debug("Aux light 1 off")
+        pin.aux_light1_off()
+
+    def run_aux_light2(self):
+        log.debug("Aux light 2 on")
+        pin.aux_light2_on()
+        sleep(3)
+        log.debug("Aux light 2 off")
+        pin.aux_light2_off()
 
     def start(self):
         log.info("Starting asteroid")
