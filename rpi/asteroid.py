@@ -47,28 +47,21 @@ class Pin:
 
     def main_light_on(self):
         GPIO.output(main_light, GPIO.LOW)
-        log.debug("main_light to on")
 
     def main_light_off(self):
         GPIO.output(main_light, GPIO.HIGH)
-        log.debug("main_light to off")
 
     def aux_light1_on(self):
         GPIO.output(aux_light1, GPIO.HIGH)
-        log.debug("main_light1 to on")
 
     def aux_light1_off(self):
         GPIO.output(aux_light1, GPIO.LOW)
-        log.debug("aux_light1 to off")
 
     def aux_light2_on(self):
         GPIO.output(aux_light2, GPIO.LOW)
-        log.debug("aux_light2 to on")
 
     def aux_light2_off(self):
         GPIO.output(aux_light2, GPIO.HIGH)
-        log.debug("aux_light2 to off")
-
 
 class Button(BaseHTTPRequestHandler):
     def do_GET(self):
