@@ -101,7 +101,7 @@ class Button(BaseHTTPRequestHandler):
 
 class Asteroid:
     def __init__(self):
-        runtime = 5
+        self.runtime = 5
         server_address = ("0.0.0.0", 8080)
         self.pin = Pin()
         self.httpd = HTTPServer(server_address, Button)
@@ -116,14 +116,14 @@ class Asteroid:
     def run_main_light(self):
         log.debug("Main light on")
         self.pin.main_light_on()
-        time.sleep(runtime)
+        time.sleep(self.runtime)
         log.debug("Main light off")
         self.pin.main_light_off()
         return
 
     def run_aux_light1(self):
         log.debug("Aux light 1 on")
-        timeout = time.time() + runtime
+        timeout = time.time() + self.runtime
         while time.time() < timeout:
             self.pin.aux_light1_on()
             time.sleep(0.05)
@@ -135,7 +135,7 @@ class Asteroid:
     def run_aux_light2(self):
         log.debug("Aux light 2 on")
         self.pin.aux_light2_on()
-        time.sleep(runtime)
+        time.sleep(self.runtime)
         log.debug("Aux light 2 off")
         self.pin.aux_light2_off()
         return
