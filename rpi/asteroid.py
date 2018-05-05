@@ -85,13 +85,13 @@ class Button(BaseHTTPRequestHandler):
         self.wfile.write(bytes(message, "utf8"))
         log.info("Remote button triggered")
         log.debug("Running threads")
-        asteroid.main_light.start()
-        asteroid.aux_light1.start()
-        asteroid.aux_light2.start()
+        Asteroid.main_light.start()
+        Asteroid.aux_light1.start()
+        Asteroid.aux_light2.start()
         log.debug("Threads started, waiting them to finish")
-        asteroid.main_light.join()
-        asteroid.aux_light1.join()
-        asteroid.aux_light2.join()
+        Asteroid.main_light.join()
+        Asteroid.aux_light1.join()
+        Asteroid.aux_light2.join()
         log.debug("All threads finished")
         return
 
@@ -100,9 +100,9 @@ class Asteroid:
         server_address = ("0.0.0.0", 8080)
         self.pin = Pin()
         self.httpd = HTTPServer(server_address, Button)
-        main_light = threading.Thread(target=self.run_main_light, args=())
-        aux_light1 = threading.Thread(target=self.run_aux_light1, args=())
-        aux_light2 = threading.Thread(target=self.run_aux_light2, args=())
+        self.main_light = threading.Thread(target=self.run_main_light, args=())
+        self.aux_light1 = threading.Thread(target=self.run_aux_light1, args=())
+        self.aux_light2 = threading.Thread(target=self.run_aux_light2, args=())
 
     def wait_for_button(self):
         log.info("Starting HTTP-server for remote action button")
