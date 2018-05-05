@@ -6,12 +6,12 @@ logging.config.fileConfig("logging.ini")
 
 from subprocess import call  # Call external programs
 from http.server import BaseHTTPRequestHandler, HTTPServer # HTTP server to listen remote ESP button
-from time import sleep       # Sleep / wait
+import time                  # Sleep / wait
 import RPi.GPIO as GPIO      # Raspberry GPIO library
 import sys                   # System calls
 import signal                # Catch kill signal
 import select                # For select.error
-import threading             # Run multiple functions simultaneously<
+import threading             # Run multiple functions simultaneously
 
 # Setup logging
 log = logging.getLogger("asteroid")
@@ -101,6 +101,7 @@ class Button(BaseHTTPRequestHandler):
 
 class Asteroid:
     def __init__(self):
+        runtime = 5
         server_address = ("0.0.0.0", 8080)
         self.pin = Pin()
         self.httpd = HTTPServer(server_address, Button)
@@ -115,25 +116,26 @@ class Asteroid:
     def run_main_light(self):
         log.debug("Main light on")
         self.pin.main_light_on()
-        sleep(5)
+        sleep(runtime)
         log.debug("Main light off")
         self.pin.main_light_off()
         return
 
     def run_aux_light1(self):
         log.debug("Aux light 1 on")
-        for x in range(0, 25):
+        timeout = time.time() + runtime
+        while time.time() < timeout:
             self.pin.aux_light1_on()
-            sleep(0.2)
+            sleep(0.05)
             self.pin.aux_light1_off()
-            sleep(0.2)
+            sleep(0.05)
         log.debug("Aux light 1 off")
         return
 
     def run_aux_light2(self):
         log.debug("Aux light 2 on")
         self.pin.aux_light2_on()
-        sleep(3)
+        sleep(runtime)
         log.debug("Aux light 2 off")
         self.pin.aux_light2_off()
         return
