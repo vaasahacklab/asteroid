@@ -116,7 +116,7 @@ class Asteroid:
     def run_main_light(self):
         log.debug("Main light on")
         self.pin.main_light_on()
-        sleep(runtime)
+        time.sleep(runtime)
         log.debug("Main light off")
         self.pin.main_light_off()
         return
@@ -126,16 +126,16 @@ class Asteroid:
         timeout = time.time() + runtime
         while time.time() < timeout:
             self.pin.aux_light1_on()
-            sleep(0.05)
+            time.sleep(0.05)
             self.pin.aux_light1_off()
-            sleep(0.05)
+            time.sleep(0.05)
         log.debug("Aux light 1 off")
         return
 
     def run_aux_light2(self):
         log.debug("Aux light 2 on")
         self.pin.aux_light2_on()
-        sleep(runtime)
+        time.sleep(runtime)
         log.debug("Aux light 2 off")
         self.pin.aux_light2_off()
         return
