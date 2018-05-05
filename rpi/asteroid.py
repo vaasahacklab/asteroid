@@ -84,14 +84,18 @@ class Button(BaseHTTPRequestHandler):
         # Write content as utf-8 data
         self.wfile.write(bytes(message, "utf8"))
         log.info("Remote button triggered")
+        log.debug("Setting threads")
+        main_light = threading.Thread(target=asteroid.run_main_light, args=())
+        aux_light1 = threading.Thread(target=asteroid.run_aux_light1, args=())
+        aux_light2 = threading.Thread(target=asteroid.run_aux_light2, args=())
         log.debug("Running threads")
-        Asteroid.main_light.start()
-        Asteroid.aux_light1.start()
-        Asteroid.aux_light2.start()
+        main_light.start()
+        aux_light1.start()
+        aux_light2.start()
         log.debug("Threads started, waiting them to finish")
-        Asteroid.main_light.join()
-        Asteroid.aux_light1.join()
-        Asteroid.aux_light2.join()
+        main_light.join()
+        aux_light1.join()
+        aux_light2.join()
         log.debug("All threads finished")
         return
 
@@ -100,9 +104,6 @@ class Asteroid:
         server_address = ("0.0.0.0", 8080)
         self.pin = Pin()
         self.httpd = HTTPServer(server_address, Button)
-        self.main_light = threading.Thread(target=self.run_main_light, args=())
-        self.aux_light1 = threading.Thread(target=self.run_aux_light1, args=())
-        self.aux_light2 = threading.Thread(target=self.run_aux_light2, args=())
 
     def wait_for_button(self):
         log.info("Starting HTTP-server for remote action button")
@@ -113,24 +114,27 @@ class Asteroid:
 
     def run_main_light(self):
         log.debug("Main light on")
-        pin.main_light_on()
+        self.pin.main_light_on()
         sleep(5)
         log.debug("Main light off")
-        pin.main_light_off()
+        self.pin.main_light_off()
+        return
 
     def run_aux_light1(self):
         log.debug("Aux light 1 on")
-        pin.aux_light1_on()
+        self.pin.aux_light1_on()
         sleep(2)
         log.debug("Aux light 1 off")
-        pin.aux_light1_off()
+        self.pin.aux_light1_off()
+        return
 
     def run_aux_light2(self):
         log.debug("Aux light 2 on")
-        pin.aux_light2_on()
+        self.pin.aux_light2_on()
         sleep(3)
         log.debug("Aux light 2 off")
-        pin.aux_light2_off()
+        self.pin.aux_light2_off()
+        return
 
     def start(self):
         log.info("Starting asteroid")
