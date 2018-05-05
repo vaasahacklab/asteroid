@@ -26,12 +26,13 @@ void loop() {
 }
 
 void onButtonPress() {
+  Serial.println("click");
   send = true;
 }
 
 bool createConnection(const char* ssid, const char* key){
-  Serial.println("Connecting to ");
-  Serial.print(ssid);
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
   WiFi.begin(ssid, key);
   const int MAX_TRIES = 5;
   int tries = 0;
