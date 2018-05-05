@@ -40,8 +40,8 @@ class Pin:
         # Set up GPIO output channels
         GPIO.setup(main_light, GPIO.OUT, initial=GPIO.HIGH)
         log.debug("initialized main_light, pin to high")
-        GPIO.setup(aux_light1, GPIO.OUT, initial=GPIO.HIGH)
-        log.debug("initialized aux_light1, pin to high")
+        GPIO.setup(aux_light1, GPIO.OUT, initial=GPIO.LOW)
+        log.debug("initialized aux_light1, pin to low")
         GPIO.setup(aux_light2, GPIO.OUT, initial=GPIO.HIGH)
         log.debug("initialized aux_light2, pin to high")
 
@@ -54,11 +54,11 @@ class Pin:
         log.debug("main_light to off")
 
     def aux_light1_on(self):
-        GPIO.output(aux_light1, GPIO.LOW)
+        GPIO.output(aux_light1, GPIO.HIGH)
         log.debug("main_light1 to on")
 
     def aux_light1_off(self):
-        GPIO.output(aux_light1, GPIO.HIGH)
+        GPIO.output(aux_light1, GPIO.LOW)
         log.debug("aux_light1 to off")
 
     def aux_light2_on(self):
@@ -122,10 +122,12 @@ class Asteroid:
 
     def run_aux_light1(self):
         log.debug("Aux light 1 on")
-        self.pin.aux_light1_on()
-        sleep(2)
+        for x in range(0, 25):
+            self.pin.aux_light1_on()
+            sleep(0.2)
+            self.pin.aux_light1_off()
+            sleep(0.2)
         log.debug("Aux light 1 off")
-        self.pin.aux_light1_off()
         return
 
     def run_aux_light2(self):
