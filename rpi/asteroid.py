@@ -20,6 +20,7 @@ log = logging.getLogger("asteroid")
 main_light = 11
 aux_light1 = 12
 aux_light2 = 36
+audio_pin = 10
 
 ## Old pins from gatekeeper, for reference
 # lights = 38
@@ -44,6 +45,8 @@ class Pin:
         log.debug("initialized aux_light1, pin to low")
         GPIO.setup(aux_light2, GPIO.OUT, initial=GPIO.HIGH)
         log.debug("initialized aux_light2, pin to high")
+	GPIO.setup(audio_pin, GPIO.OUT, initial=GPIO.HIGH)
+	log.debug("initialized audio_pin, pin to high")
 
     def main_light_on(self):
         GPIO.output(main_light, GPIO.LOW)
@@ -81,14 +84,17 @@ class Button(BaseHTTPRequestHandler):
         main_light = threading.Thread(target=asteroid.run_main_light, args=())
         aux_light1 = threading.Thread(target=asteroid.run_aux_light1, args=())
         aux_light2 = threading.Thread(target=asteroid.run_aux_light2, args=())
+	audio = threading.Thread(target=asteroid.run_audio, args=())
         log.debug("Running threads")
         main_light.start()
         aux_light1.start()
         aux_light2.start()
+	audio.start()
         log.debug("Threads started, waiting them to finish")
         main_light.join()
         aux_light1.join()
         aux_light2.join()
+	audio.join()
         log.debug("All threads finished")
         return
 
@@ -132,6 +138,25 @@ class Asteroid:
         log.debug("Aux light 2 off")
         self.pin.aux_light2_off()
         return
+
+    def run_audio(self):
+	log.debug("Playing audio")
+	start_time = time.time()
+	timeout = time.time() + self.runtime
+	max_frequency = 6000
+	min_frequency = 1000
+	frequency_step = 10
+	repetitions = 5
+	wait_time = float(self.runtime) / ((max_frequency - min_frequency) / frequency_step) / repetitions
+	Buzz = GPIO.PWM(audio_pin, 440)
+	Buzz.start(50)
+	while time.time() < timeout:
+	    for i in range(max_frequency, min_frequqncy, -frequencyStep):
+		Buzz.ChangeFrequency(i)
+		time.sleep(waitTime)
+
+	Buzz.stop()
+	GPIO.output(audio_pin, GPIO.HIGH)
 
     def start(self):
         log.info("Starting asteroid")
