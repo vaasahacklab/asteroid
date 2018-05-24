@@ -6,7 +6,7 @@ const char* WIFI_SSID = "my-ssid";
 const char* WIFI_PASS = "my-pass";
 
 const int HTTP_PORT = 8080;
-IPAddress server(10,10,0,233);
+IPAddress server(192,168,4,1);
 
 volatile bool send = false;
 
