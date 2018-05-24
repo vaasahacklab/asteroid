@@ -6,7 +6,7 @@ const char* WIFI_SSID = "my-ssid";
 const char* WIFI_PASS = "my-pass";
 
 const int HTTP_PORT = 8080;
-IPAddress server(10,10,0,233);
+IPAddress server(192,168,4,1);
 
 volatile bool send = false;
 
@@ -18,11 +18,15 @@ void setup() {
 }
 
 void loop() {
+  if (WiFi.status() != WL_CONNECTED) {
+    createConnection(WIFI_SSID, WIFI_PASS);
+  }
   if (send) { 
     sendRequest(); 
     send = false;
     delay(5000);
   }
+  
 }
 
 void onButtonPress() {
@@ -43,7 +47,7 @@ bool createConnection(const char* ssid, const char* key){
   } while(WiFi.status() != WL_CONNECTED && MAX_TRIES > ++tries);
 
   if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Could not connect to WiFi");
+    Serial.printf("\nCould not connect to WiFi after %d tries\n", tries);
     return false;
   }
 
