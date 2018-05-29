@@ -37,12 +37,13 @@ void onButtonPress() {
 bool createConnection(const char* ssid, const char* key){
   Serial.print("Connecting to ");
   Serial.println(ssid);
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, key);
   const int MAX_TRIES = 5;
   int tries = 0;
   
   do {
-    delay(500);
+    delay(1000);
     Serial.print(".");
   } while(WiFi.status() != WL_CONNECTED && MAX_TRIES > ++tries);
 
@@ -64,7 +65,7 @@ bool sendRequest() {
   WiFiClient client;
 
   bool success = client.connect(server, HTTP_PORT);
-  delay(500);  
+  delay(1500);
   if(!success) {
     Serial.println("Connection failed");
     return false;
