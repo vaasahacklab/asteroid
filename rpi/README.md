@@ -77,7 +77,7 @@ ssh root@<IP-address>
 Copy asteroid systemd service -file into systemd and enable it
 
 ```
-cp /home/asteroid/asteroid/asteroid.service.example /lib/systemd/system/asteroid.service
+cp /home/asteroid/asteroid/rpi/asteroid.service.example /lib/systemd/system/asteroid.service
 systemctl daemon-reload
 systemctl enable asteroid.service
 exit
