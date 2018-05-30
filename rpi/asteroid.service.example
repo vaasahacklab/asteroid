@@ -4,12 +4,12 @@ After=network.target
 
 [Service]
 Type=simple
-User=hacklab
-Group=hacklab
-WorkingDirectory=/home/hacklab/asteroid/rpi
-ExecStart=/home/hacklab/asteroid/rpi/venv/bin/python asteroid.py
+User=asteroid
+Group=asteroid
+WorkingDirectory=/home/asteroid/asteroid/rpi
+ExecStart=/home/asteroid/asteroid/rpi/venv/bin/python asteroid.py
 Restart=always
-RestartSec=5
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
